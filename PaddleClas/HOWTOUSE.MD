@@ -1,0 +1,2 @@
+python train_photo_quality.py --data_dir ../../si/imgs --pretrained False
+python infer_photo_quality.py --model_path ./output/best_model_epoch1_acc0.9536_251222-0049.pdparams --input_path ../../si/t_imgs --save_good --output_dir ./good_photos

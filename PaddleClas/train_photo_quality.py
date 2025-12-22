@@ -342,20 +342,22 @@ def train():
         if val_acc > best_acc:
             best_acc = val_acc
             now = datetime.now()
-            model_path = os.path.join(args.output_dir, f'best_model_epoch{epoch+1}_acc{val_acc:.4f}_{now.strftime("%Y%m%d_%H%M")}.pdparams')
+            model_path = os.path.join(args.output_dir, f'best_model_epoch{epoch+1}_acc{val_acc:.4f}_{now.strftime("%y%m%d-%H%M")}.pdparams')
             paddle.save(model.state_dict(), model_path)
             info(f"保存最佳模型到 {model_path}")
         
         # 每5轮保存一次模型
         if (epoch + 1) % 5 == 0:
-            model_path = os.path.join(args.output_dir, f'model_epoch{epoch+1}_{now.strftime("%Y%m%d_%H%M")}.pdparams')
+            now = datetime.now()
+            model_path = os.path.join(args.output_dir, f'model_epoch{epoch+1}_{now.strftime("%y%m%d-%H%M")}.pdparams')
             paddle.save(model.state_dict(), model_path)
             info(f"保存模型到 {model_path}")
     
     info(f"训练完成，最佳验证准确率: {best_acc:.4f}")
     
     # 保存最终模型
-    final_model_path = os.path.join(args.output_dir, f'final_model_{now.strftime("%Y%m%d_%H%M")}.pdparams')
+    now = datetime.now()
+    final_model_path = os.path.join(args.output_dir, f'final_model_{now.strftime("%y%m%d-%H%M")}.pdparams')
     paddle.save(model.state_dict(), final_model_path)
     info(f"保存最终模型到 {final_model_path}")
 
