@@ -108,6 +108,7 @@ class PhotoQualityDataset(Dataset):
 
 import numpy as np
 import cv2
+from datetime import datetime
 
 class GaussianBlur:
     """自定义高斯模糊变换，用于替代paddle.vision.transforms.GaussianBlur
@@ -196,6 +197,7 @@ def train():
     parser.add_argument('--use_amp', type=bool, default=True, help='是否使用混合精度训练，针对M3 Pro优化')
     parser.add_argument('--val_split', type=float, default=0.2, help='验证集比例')
     parser.add_argument('--seed', type=int, default=42, help='随机种子')
+    parser.add_argument('--pretrained', type=bool, default=True, help='是否使用预训练权重')
     args = parser.parse_args()
     
     # 设置随机种子
@@ -244,7 +246,7 @@ def train():
     
     # 2. 模型创建
     info("正在创建模型...")
-    model = create_model(num_classes=2, pretrained=True)
+    model = create_model(num_classes=2, pretrained=args.pretrained)
     
     # 3. 优化器配置
     # 针对Apple Silicon优化的AdamW配置
@@ -339,20 +341,23 @@ def train():
         # 保存最佳模型
         if val_acc > best_acc:
             best_acc = val_acc
-            model_path = os.path.join(args.output_dir, f'best_model_epoch{epoch+1}_acc{val_acc:.4f}.pdparams')
+            now = datetime.now()
+            model_path = os.path.join(args.output_dir, f'best_model_epoch{epoch+1}_acc{val_acc:.4f}_{now.strftime("%y%m%d-%H%M")}.pdparams')
             paddle.save(model.state_dict(), model_path)
             info(f"保存最佳模型到 {model_path}")
         
         # 每5轮保存一次模型
         if (epoch + 1) % 5 == 0:
-            model_path = os.path.join(args.output_dir, f'model_epoch{epoch+1}.pdparams')
+            now = datetime.now()
+            model_path = os.path.join(args.output_dir, f'model_epoch{epoch+1}_{now.strftime("%y%m%d-%H%M")}.pdparams')
             paddle.save(model.state_dict(), model_path)
             info(f"保存模型到 {model_path}")
     
     info(f"训练完成，最佳验证准确率: {best_acc:.4f}")
     
     # 保存最终模型
-    final_model_path = os.path.join(args.output_dir, 'final_model.pdparams')
+    now = datetime.now()
+    final_model_path = os.path.join(args.output_dir, f'final_model_{now.strftime("%y%m%d-%H%M")}.pdparams')
     paddle.save(model.state_dict(), final_model_path)
     info(f"保存最终模型到 {final_model_path}")
 
