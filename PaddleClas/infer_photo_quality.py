@@ -273,18 +273,18 @@ def save_good_image(result, output_dir):
         result (dict): 图像分类结果
         output_dir (str): 输出目录
     """
-    if result['pred_class'] == 'good':
+    # if result['pred_class'] == 'good':
         # 创建输出目录
-        os.makedirs(output_dir, exist_ok=True)
-        
-        # 构造输出路径
-        filename = os.path.basename(result['image_path'])
-        output_path = os.path.join(output_dir, filename)
-        
-        # 复制文件
-        shutil.copy2(result['image_path'], output_path)
-        return output_path
-    return None
+    os.makedirs(output_dir, exist_ok=True)
+    
+    # 构造输出路径
+    filename = os.path.basename(result['image_path'])
+    output_path = os.path.join(output_dir, filename)
+    
+    # 复制文件
+    shutil.copy2(result['image_path'], output_path)
+    return output_path
+    # return None
 
 def infer(args):
     """推理主函数
